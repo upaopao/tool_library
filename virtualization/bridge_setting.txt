@@ -1,0 +1,192 @@
+<interface type='network'>:nat网络转换
+<interface type='bridge'>:bridge网络桥接
+
+* centos7-base
+<interface type='network'>               //<interface type='bridge'>
+  <mac address='52:54:00:6a:63:3c'/>
+  <source network='default'/>            //<source bridge='br0'/>
+  <actual type='network'>                //<actual type='bridge'> 或 <actual type='network'>
+    <source bridge='virbr0'/>
+  </actual>
+  <target dev='vnet0'/>                  //注释删除/清空赋值/赋值任意值,如 <target dev='vnet7'/>，不能设置为br0等设备
+  <model type='virtio'/>
+  <alias name='net0'/>
+  <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+</interface>
+
+* ubuntu14-base
+<interface type='network'>
+  <mac address='52:54:00:12:b0:e1'/>
+  <source network='default'/>
+  <actual type='network'>
+  </actual>
+  <target dev='vnet0'/>
+  <model type='virtio'/>
+  <alias name='net0'/>
+  <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+</interface>
+
+* libvirt
+<interface type='bridge'>
+  <source bridge='br0'/>
+</interface>
+
+<interface type='bridge'>
+  <source bridge='br1'/>
+  <target dev='vnet7'/>              //注释删除/清空赋值/赋值任意值,如 <target dev='vnet7'/>，不能设置为br0等设备
+  <mac address="00:11:22:33:44:55"/>
+</interface>
+
+<interface type='bridge'>
+  <source bridge='ovsbr'/>
+  <virtualport type='openvswitch'>  //对于不具备openvswitch功能的设备,需要注释该参数
+    <parameters profileid='menial' interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/>
+  </virtualport>
+</interface>
+  
+<interface type='bridge'>
+  <source bridge='midonet'/>
+  <virtualport type='midonet'>      //对于不具备midonet功能的设备,需要注释该参数
+    <parameters interfaceid='0b2d64da-3d0e-431e-afdd-804415d6ebbb'/>
+  </virtualport>
+</interface>
+
+**vemerge-base 
+<interface type='bridge'>
+  <source bridge='br0'/>
+  <virtualport type='openvswitch'>  //对于不具备openvswitch功能的设备,需要注释该参数
+  </virtualport>                       
+  <model type='virtio'/>
+  <driver name='vhost'/>
+  <alias name='net0'/>
+</interface>
+
+选取示例:
+1.virt原生修改用例(ubuntu选用参数用例) 
+<interface type='bridge'>
+  <mac address='52:54:00:12:b0:e1'/> //这里,建议去掉mac地址的手动指定,使用自动分配地址
+  <source bridge='br0'/>
+  <actual type='bridge'>
+  </actual>
+  <target dev='vnet0'/>
+  <model type='virtio'/>
+  <alias name='net0'/>
+  <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+</interface>
+
+2.virt原生修改用例(centos选用参数用例)
+<interface type='bridge'>
+  <mac address='52:54:00:6a:63:3c'/>
+  <source bridge='br0'/>
+  <actual type='bridge'>
+    <source bridge='br0'/>
+  </actual>
+  <target dev='vnet0'/>
+  <model type='virtio'/>
+  <alias name='net0'/>
+  <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+</interface>
+
+3.vemerge-base修改用例
+<interface type='bridge'>
+  <source bridge='br0'/>                     
+  <model type='virtio'/>
+  <driver name='vhost'/>
+  <alias name='net0'/>
+</interface>
+
+4.libvirt修改用例
+  暂无
+
+5.问题解决
+  Windows创建虚拟机后需要安装virto驱动,以识别virto类型网卡
+  virto驱动通过软驱访问.
+
+网桥设置命令
+  ip addr show  //查看网卡设备信息,获取物理网卡的配置信息
+    brctl show  //查看网桥设备列表
+  brctl addbr br0 //添加名为br0的网桥
+    brctl show    //查看网桥设备列表,确认网桥br0是否添加成功
+  brctl addif br0 eth0 //为网桥br0添加interfaces设备eth0(添加成功后,主机暂时无法联网,需要重新加入默认网关)
+    btctl show  //查看网桥设备列表,确认interfaces设备是否添加成功
+  ip addr del dev eth0 10.0.0.85/22 //删除eth0上面的ip地址(eth0地址可以不删除)
+  ifconfig br0 10.0.0.85/22 up      //配置br0的ip地址,并启用该网桥
+                                    //br0的ip地址可以和eth0保持完全一致,也可以不同(建议eth0/br0同时设置不同ip地址,设置相同子网)
+                                    //子网掩码必须相同(不同可能导致网络不通)
+				    //测试发现:ip/mask设置跟et0必须保持一致,否则会经常导致主机无法访问网络,kvm主机不受影响.
+  route add default gw 10.0.0.1     //重新加入默认网关(重新加入网关后才能联入网络)
+  route / route -n                  //查看路由/网关信息
+
+ip地址配置操作命令
+  ifconfig br0 down //关闭设备
+  ifconfig br0 up   //开启设备
+  ip addr del dev eth0 10.0.0.85/22  //删除ip信息
+  ip addr add dev eth0 10.0.0.85/22  //增加/更新ip信息
+  ifconfig br0 10.0.0.85/22 up       //添加/更新ip信息,并启动设备
+     * ip addr 或者ifconfig 增删ip地址的时候
+     * 先通过ifconfig down命令关掉网络设备
+  route add default gw 10.0.0.1 //添加默认网关(default)
+  route delete default          //删除默认网关(default)
+     * 所有设备设置完成之后,需要重新加入默认网关,否则主机无法联网
+
+--------------------------------------------------------------------------------
+(2) 通过配置文件配置桥接设备
+原有配置文件请自行备份
+
+cat /etc/sysconfig/network-scripts/ifcfg-eth0 
+DEVICE=eth0 
+TYPE=Ethernet 
+ONBOOT=yes
+BRIDGE=br0 
+
+cat /etc/sysconfig/network-scripts/ifcfg-br0 
+DEVICE=br0 
+TYPE=Bridge 
+ONBOOT=yes
+BOOTPROTO=static 
+IPADDR=192.168.3.176 
+NETMASK=255.255.255.0 
+GATEWAY=192.168.3.1
+
+参数详解：
+ifcfg-eth0
+      Device              指定网卡设备名
+      TYPE                指定网卡的类型为以太网卡
+      ONBOOT              指定网卡是否开机启动，切记要设置为yes
+      BRIDGE              指定桥接设备，此处指定为br0设备
+      BOOTPROTO           指定静态分配/动态分配 static/dhcp
+      建议：以上变量（非变量值）均为大写。
+
+      static分配方式指定参数
+        IPADDR              设置br0绑定的IP地址
+        NETMASK             设置子网掩码地址
+        GATEWAY             设置网关
+
+ifcfg-br0
+      Device              指定网卡设备名
+      TYPE                指定网卡的类型为桥接
+      ONBOOT              指定网卡是否开机启动，切记要设置为yes
+      BOOTPROTO           指定网卡启动如何获取IP地址，作为网桥,必须设置静态
+      建议：TYPE变量的变量值按照第一个字母大写，其余字母小写的原则，如Ethernet,Bridge
+
+      static分配方式指定参数
+        IPADDR              设置br0绑定的IP地址
+        NETMASK             设置子网掩码地址
+        GATEWAY             设置网关
+      
+
+eth0  网卡一般是动态设置网络参数
+br0   网桥一般要设置静态网络参数
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+  
+   
+ 

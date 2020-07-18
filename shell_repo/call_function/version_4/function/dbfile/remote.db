@@ -1,0 +1,14 @@
+**********************remote md5 value**********************
+IP:   192.168.14.250
+date: 2018-02-27 19:55
+  
+f3f0dbb9ca455eb4fcdc01b3aefa034e  /home/vespace_release5.4/costor/libtarget.so
+9f950d4ea6743b590d632ba3157ab9ec  /home/vespace_release5.4/costor/costor
+7941a2b8e9ac4383f67a28b42067d211  /home/vespace_release5.3/costor/targetadm
+d196e904605553b15ebe12f10c43f9a8  /home/vespace_release5.3/costor/targetd
+ 
+—————————————————————
+(getfile.sh) runtime:
+start: 19:55:42
+end:   19:55:50
+ 

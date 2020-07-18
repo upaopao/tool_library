@@ -1,0 +1,23 @@
+Scripting properties:
+
+# 1. show file name
+ll | awk {print'$9'}
+
+# 2. sed command modify file
+sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config -i
+sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config -i
+
+# 3. cat the 'modify date' for each file
+cat 0--run.sh | grep 'modify date'
+cat 6--packiso.sh | grep 'modify date'
+cat 7--service.sh | grep 'modify date'
+cat 9--ssh.sh | grep 'modify date'
+cat 10-sshFunc.sh | grep 'modify date'
+cat 1-buildall.sh | grep 'modify date'
+cat 2-commit.sh | grep 'modify date'
+cat 3-getfile.sh | grep 'modify date'
+cat 4-releaseall.sh | grep 'modify date'
+cat 5-valuecheck.sh | grep 'modify date'
+cat 8-replaceFunc.sh | grep 'modify date'
+cat test.sh | grep 'modify date'
+

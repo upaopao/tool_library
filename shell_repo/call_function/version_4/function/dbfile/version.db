@@ -1,0 +1,12 @@
+**********************release version value**********************
+conver version 5.4  @go1.9.2 linux/amd64  SRC#728e78e00c610265afcbe5ccd06ce435fe58e055  CMN#197d4a608e3abbb73647e186e90c7e12a1f9510c
+costor version 5.4  @go1.9.2 linux/amd64  SRC#83146b615cc2bc1ee06c108faf34a5eeb5a8fb0e  CMN#ea7b2a393a6894614d852a33ff285c49a32ab822
+vagent version 5.4  @go1.9.2 linux/amd64  SRC#75a3311387112c260fb566a702ebdffa14d7eec5  CMN#197d4a608e3abbb73647e186e90c7e12a1f9510c
+manager md5 value:  dcfd0035a29cb932a3e22b10ff6c3e58  /root/release/release-image/release-service/manager/vemerge/usr/local/bin/manager
+vagent version 5.4  @go1.9.2 linux/amd64  SRC#75a3311387112c260fb566a702ebdffa14d7eec5  CMN#197d4a608e3abbb73647e186e90c7e12a1f9510c
+costor version 5.4  @go1.9.2 linux/amd64  SRC#83146b615cc2bc1ee06c108faf34a5eeb5a8fb0e  CMN#ea7b2a393a6894614d852a33ff285c49a32ab822
+vagent version 5.4  @go1.9.2 linux/amd64  SRC#75a3311387112c260fb566a702ebdffa14d7eec5  CMN#197d4a608e3abbb73647e186e90c7e12a1f9510c
+cosrv version 5.4  @go1.9.2 linux/amd64  #cca38d2288c541ab1c40a93c992dc162164691e4
+vagent version 5.4  @go1.9.2 linux/amd64  SRC#75a3311387112c260fb566a702ebdffa14d7eec5  CMN#197d4a608e3abbb73647e186e90c7e12a1f9510c
+xedge version 5.3  @go1.9.2 linux/amd64  SRC#e751b9d6b2a8e162db8a833a9f83fc5dee8d2112  CMN#197d4a608e3abbb73647e186e90c7e12a1f9510c
+ 

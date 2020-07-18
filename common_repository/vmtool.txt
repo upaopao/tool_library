@@ -1,0 +1,73 @@
+一.  确保成功安装了VMware Tools
+
+二.  使用如下命令
+
+1.apt-get install open-vm-tools
+
+
+
+2.vmhgfs-fuse .host:/  /mnt/hgfs                       （超级用户下挂载）                  #使用该命令成功挂载
+
+    （注意：.host前面有一个空格，host:/后面有两个空格）
+
+3.关闭终端，重新打开终端，切换到root用户
+
+4.切换目录   cd /mnt/hgfs
+
+                   ls查看一下
+
+
+一、首先是安装VMWare tools
+ 
+安装过程可参考：Installing VMware Tools in an Ubuntu virtual machine
+ 
+安装成功后，可看的如下信息：
+#########################
+The configuration of VMware Tools 9.6.2 build-1688356 for Linux for this
+running kernel completed successfully.
+
+You must restart your X session before any mouse or graphics changes take
+effect.
+
+You can now run VMware Tools by invoking "/usr/bin/vmware-toolbox-cmd" from the
+command line.
+
+To enable advanced X features (e.g., guest resolution fit, drag and drop, and
+file and text copy/paste), you will need to do one (or more) of the following:
+1. Manually start /usr/bin/vmware-user
+2. Log out and log back into your desktop session; and,
+3. Restart your X session.
+
+Enjoy,
+
+--the VMware team
+############################
+
+
+
+参考： http://devplant.net/2014/08/27/unknown-job-errors-when-installing-vmware-tools-in-ubuntu/
+ 
+ 
+二、解决安装VMWare tools后/mnt中有hgfs但没共享文件
+
+前提：在虚拟机软件中设置了共享目录
+
+此时在linux中进入 /mnt/hgfs 文件夹，但发现共享的文件没有显示
+
+使用以下办法解决(root权限)：
+
+1.  vmware-hgfsclient 命令查看当前有哪些共享的目录，这里我只使用了shared文件夹
+
+2.  使用 mount  -t vmhgfs .host:/shared /mnt/hgfs  命令挂载该共享文件夹(注意：带.号的哦)，其中.host:/Documents是共享名，只需把Documents换成
+使用vmware-hgfsclient 命令得到的目录，/mnt/hgfs是挂载点
+
+3. 到此为止是可以使用该共享文件夹了，但每次都得重复mount一次，所以需要设置为随机启动后自动挂载
+    编辑 /etc/fstab，添加下面一行
+    .host:/shared     /mnt/hgfs       vmhgfs     defaults  0  0 （按需写）
+
+
+补充：
+如果显示
+Error: cannot mount filesystem: No such device
+ubuntu则先执行  sudo apt-get install open-vm-dkms
+然后再执行3

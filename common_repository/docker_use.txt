@@ -1,0 +1,3 @@
+
+設置dokcer tty窗口
+docker exec -it -e LINES=$(tput lines) -e COLUMNS=$(tput cols) ed08 bash
